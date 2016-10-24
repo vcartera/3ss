@@ -15,10 +15,10 @@ var scrollBoxContainer = document.getElementById("scroll-box");
 scrollBoxContainer.innerHTML = "";
 var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin hendrerit metus eu metus finibus, ut bibendum ante gravida. Nulla facilisi. Pellentesque mi mi, elementum sit amet lorem in, luctus porttitor mauris. Nam convallis, dolor sed efficitur aliquet, lectus augue scelerisque magna, in egestas felis nibh et arcu."
 
-for (var i = 0; i < 1; i++) {
+for (var i = 0; i < 10; i++) {
     scrollBoxContainer.appendChild(item(
         'https://i.ytimg.com/vi/ll6XE5J9SUY/hqdefault.jpg?custom=true&w=168&h=94&stc=true&jpg444=true&jpgq=90&sp=68&sigh=Cx1nnRSpoljKN5ix-LM0A0kd5I4',
-        "Title",
+        "Title is long and ugly needs to shave more often",
         lorem));//'<div id="item">' + lorem + '</div>';
 }
 
