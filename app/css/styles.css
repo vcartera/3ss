@@ -46,15 +46,20 @@ hr {
     min-height: 100px;
     border: 1px solid grey;
     margin-bottom: 5px;
+    background-color: rgba(165, 165, 165, 0.24);
 }
 
 #image-container {
-    background-color: rgba(173, 133, 73, 0.29);
+    background-color: rgba(73, 73, 73, 0.1);
     height: 100px;
     overflow: hidden;
-    width: 120px;
+    width: 130px;
     float: left;
     margin-right: 25px;
+}
+
+.item-image {
+    width: 100%;
 }
 
 .item-title {
