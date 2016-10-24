@@ -41,7 +41,7 @@ hr {
     padding-right: 1em;
 }
 
-#item {
+.item {
     min-height: 100px;
     border: 1px solid grey;
 }
