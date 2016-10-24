@@ -1,3 +1,5 @@
+const ENDPOINT = "https://crossorigin.me/http://rss.cnn.com/rss/edition_world.rss";
+
 var template = document.querySelector('.item-template');
 
 
@@ -65,7 +67,5 @@ function stripImageTags(data){
     return data.replace(/&lt;\/?[^>]+(&gt;|$)/g, '[link]');
 }
 
-request.open("GET", "https://crossorigin.me/http://rss.cnn.com/rss/edition_world.rss" , true);
+request.open("GET", ENDPOINT , true);
 request.send('');
-
-//scrollBoxContainer.innerHTML = dummyContent;
