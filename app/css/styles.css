@@ -1,0 +1,47 @@
+@import url(//fonts.googleapis.com/css?family=Oswald);
+
+:root {
+    --header-height: 50px;
+}
+
+body {
+    background-color: powderblue;
+}
+
+.content {
+    width: 400px;
+    height: 600px;
+    border: 2px solid azure;
+}
+
+.headline {
+    height: var(--header-height);
+    border: 1px solid gray;
+    font-family: 'Oswald';
+    font-size: 25px;
+}
+
+hr {
+    display: block;
+    margin-top: 0px;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: solid;
+    border-width: 1px;
+
+}
+
+#scroll-box {
+    width: 100%;
+    height: calc(100% - var(--header-height));;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid;
+    padding-right: 1em;
+}
+
+#item {
+    min-height: 100px;
+    border: 1px solid grey;
+}
