@@ -20,9 +20,12 @@ function openDetails(item) {
      var title = document.getElementById("modal-title");
      var image = document.getElementById("modal-image");
      var details = document.getElementById("modal-details");
+     var link = document.getElementById("modal-link");
 
     title.innerHTML = item.title;
     image.setAttribute("src", item.image);
     details.innerHTML = item.description;
+    link.innerHTML = '<a href="' + item.link + '" target="_blank" >'+item.link + '</a>';
+
     modal.style.display = "block";
 }

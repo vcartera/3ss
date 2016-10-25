@@ -17,7 +17,7 @@ function createItem(index, itemsXML, mediaNS) {
     itemData.title = stripCDATA(title);
     var description = itemsXML[index].getElementsByTagName("description")[0].innerHTML;
     itemData.description = stripImageTags(description);
-    itemData.link = itemsXML[index].getElementsByTagName("link")[0].innerHTML; // Not used. Integrate if time allows
+    itemData.link = itemsXML[index].getElementsByTagName("link")[0].innerHTML;
     var group = itemsXML[index].getElementsByTagNameNS(mediaNS, "group")[0];
     itemData.image = group.firstChild.attributes["url"].value;
 

@@ -37,6 +37,7 @@ function readyCallback() {
 
     if (request.responseText != '') {
 
+        // get media namespace
         var ns = request.responseXML.getElementsByTagName("rss")[0].attributes["xmlns:media"].value;
 
         var itemsXML = request.responseXML.getElementsByTagName("channel")[0].getElementsByTagName("item");
@@ -53,11 +54,10 @@ function readyCallback() {
 
         // generate content
         for (var i = 0; i < itemsXML.length; i++) {
-
             var element = createItem(i, itemsXML, ns);
 
             scrollBoxContainer.appendChild(element.htmlElement);
-            element.htmlElement = document.getElementById(i);
+            element.htmlElement = document.getElementById('' + i);
 
             if (isScrolledIntoView(element.htmlElement))
                 element.loadContent();
@@ -65,8 +65,24 @@ function readyCallback() {
             // record the item's data
             items[i] = element;
         }
+
+        // enable focus
         scrollBoxContainer.setAttribute("tabindex", "0");
         scrollBoxContainer.focus();
+
+        // we can now setup event listeners
+        scrollBoxContainer.onscroll = handleScroll;
+        scrollBoxContainer.onresize = handleScroll;
+        scrollBoxContainer.onfocus = handleFocus;
+        scrollBoxContainer.onblur = handleBlur;
+        scrollBoxContainer.onmouseover = handleMouseOverElement;
+        scrollBoxContainer.onclick = openItem;
+
+        document.onkeydown = function (e) {
+            // stop default scrolling
+            e.preventDefault();
+        };
+        document.onkeyup = handleKeyUp;
     }
 }
 
@@ -74,18 +90,6 @@ function readyCallback() {
  * Interactivity Handlers
  *
  */
-scrollBoxContainer.onscroll = handleScroll;
-scrollBoxContainer.onresize = handleScroll;
-scrollBoxContainer.onfocus = handleFocus;
-scrollBoxContainer.onblur = handleBlur;
-scrollBoxContainer.onmouseover = handleMouseOverElement;
-scrollBoxContainer.onclick = openItem;
-
-document.onkeydown = function (e) {
-    // stop default scrolling
-    e.preventDefault();
-};
-document.onkeyup = handleKeyUp;
 
 var allLoaded = false;
 function handleScroll() {
@@ -102,7 +106,7 @@ function handleScroll() {
         }
     }
 
-    // optimization for when everything is got loaded
+    // optimization for when everything was loaded
     if (items.length > 0 && loadedTotal == items.length)
         allLoaded = true;
 }

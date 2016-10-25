@@ -5,10 +5,6 @@
     --header-height: 50px;
 }
 
-body {
-    /*background-color: powderblue;*/
-}
-
 .content {
     width: 400px;
     height: 600px;
@@ -114,6 +110,7 @@ hr {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    font-family: 'Oswald';
 }
 
 .close:hover,
@@ -145,4 +142,9 @@ hr {
 .m-details {
     font-family: 'Open Sans Condensed', sans-serif;
     font-size: 18px;
+}
+
+.m-link{
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 16px;
 }
