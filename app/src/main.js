@@ -14,6 +14,8 @@ const ENDPOINT = ORIGIN_PROXY + 'http://rss.cnn.com/rss/edition_world.rss';
 var headlineContainer = document.getElementById("headline");
 var scrollBoxContainer = document.getElementById("scroll-box");
 var items = [];
+var current = 0;
+var inFocus = false;
 
 var request = new XMLHttpRequest();
 request.onreadystatechange = readyCallback;
@@ -27,7 +29,7 @@ function readyCallback() {
     }
     if (request.status !== 200) {
         // something went wrong
-        console.log("AJAX call failed with " + request.status + " status./n" + request.getAllResponseHeaders());
+        console.log("AJAX call failed with " + request.status + " status.\n" + request.getAllResponseHeaders());
         scrollBoxContainer.innerHTML = "Error fetching data.";
         return;
     }
@@ -54,7 +56,7 @@ function readyCallback() {
             var element = createItem(i, itemsXML, ns);
 
             scrollBoxContainer.appendChild(element.htmlElement);
-            element.htmlElement = document.getElementById("item" + i);
+            element.htmlElement = document.getElementById(i);
 
             if (isScrolledIntoView(element.htmlElement))
                 element.loadContent();
@@ -62,7 +64,8 @@ function readyCallback() {
             // record the item's data
             items[i] = element;
         }
-        items[0].setFocus();
+        scrollBoxContainer.setAttribute("tabindex", "0");
+        scrollBoxContainer.focus();
     }
 }
 
@@ -73,6 +76,13 @@ function readyCallback() {
 scrollBoxContainer.onscroll = handleScroll;
 scrollBoxContainer.onresize = handleScroll;
 scrollBoxContainer.onfocus = handleFocus;
+scrollBoxContainer.onblur = handleBlur;
+scrollBoxContainer.onmouseover = handleMouseOverElement;
+
+document.onkeydown = function (e) {
+    e.preventDefault();
+};
+document.onkeyup = handleKeyUp;
 
 var allLoaded = false;
 function handleScroll() {
@@ -91,11 +101,62 @@ function handleScroll() {
 
     // optimization for when everything is got loaded
     if (items.length > 0 && loadedTotal == items.length)
-            allLoaded = true;
+        allLoaded = true;
 }
 
 function handleFocus() {
-    console.log("handle focus");
+    if (inFocus || !items.length) return;
+
+    inFocus = true;
+    items[current].setFocus();
+}
+
+function handleBlur() {
+    if (!inFocus || !items.length) return;
+
+    inFocus = false;
+    items[current].resetFocus();
+}
+
+function handleKeyUp(k) {
+    if (inFocus) {
+        var old = current;
+        if (k.keyCode == 38) {
+            // UP
+            current--;
+            if (current < 0) {
+                current = 0;
+            }
+
+        } else if (k.keyCode == 40) {
+            // DOWN
+            current++;
+            if (current > items.length - 1) {
+                current = items.length - 1;
+            }
+        }
+        if (old != current) {
+            items[old].resetFocus();
+            items[current].setFocus();
+            scrollToCurrent();
+        }
+    }
+}
+
+function handleMouseOverElement(e) {
+    handleFocus();
+    var element = document.elementFromPoint(e.clientX, e.clientY);
+    if (element.className == "item") {
+        var newIndex = element.getAttribute("id");
+
+        if (newIndex != current) {
+            items[current].resetFocus();
+            items[newIndex].setFocus();
+            current = newIndex;
+            scrollToCurrent();
+        }
+        console.log();
+    }
 }
 
 /**
@@ -103,7 +164,34 @@ function handleFocus() {
  *
  */
 function isScrolledIntoView(element) {
-    return !(element.getBoundingClientRect().top >= window.innerHeight);
+    return !(element.getBoundingClientRect().top >= scrollBoxContainer.getBoundingClientRect().bottom);
+}
+
+function elementIsCropped(element) {
+    var top = element.getBoundingClientRect().top;
+    var bottom = element.getBoundingClientRect().bottom;
+    var clientHeight = scrollBoxContainer.getBoundingClientRect().bottom;
+    var clientTop = scrollBoxContainer.getBoundingClientRect().top;
+
+    var isVisible = (top >= clientTop) && (bottom <= clientHeight);
+    return !isVisible;
+}
+
+function scrollToCurrent() {
+    if (items.length) {
+        var element = items[current].htmlElement;
+        if (elementIsCropped(element)) {
+            var top = element.getBoundingClientRect().top;
+            var bottom = element.getBoundingClientRect().bottom;
+            var clientHeight = scrollBoxContainer.getBoundingClientRect().bottom;
+            var clientTop = scrollBoxContainer.getBoundingClientRect().top;
+            // console.log("top: " + top + ", bottom: " + bottom + " clientHeight: " + clientHeight + " clienTop:" + clientTop);
+            if (bottom > clientHeight)
+                scrollBoxContainer.scrollTop += bottom - clientHeight;
+            if (top < clientTop)
+                scrollBoxContainer.scrollTop -= clientTop - top;
+        }
+    }
 }
 
 function stripCDATA(data) {

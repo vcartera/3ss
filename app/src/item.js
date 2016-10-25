@@ -23,7 +23,7 @@ function createItem(index, itemsXML, mediaNS) {
     // deal with template
     var itemDiv = document.importNode(itemTemplate.content, true);
 
-    itemDiv.firstElementChild.setAttribute('id', "item" + index);
+    itemDiv.firstElementChild.setAttribute('id', index);
     itemDiv.querySelector(".item-title").innerHTML = itemData.title;
     itemDiv.querySelector(".item-content").innerHTML = itemData.description;
 
