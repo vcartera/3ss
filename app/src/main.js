@@ -1,16 +1,18 @@
 /**
  * Created by Vitalie Cartera on 10/24/2016.
+ *
+ * This exercise uses CNN world edition RSS feed to get images and articles for mocking up scroll-box component.
+ * Lazy-loading is implemented for images only.
+ *
+ * Endpoint goes through proxy to avoid cross origin server rejection, while using localhost. [Not optimal]
+ *
  */
 
-const ENDPOINT = "https://crossorigin.me/http://rss.cnn.com/rss/edition_world.rss";
+const ORIGIN_PROXY = 'https://crossorigin.me/';
+const ENDPOINT = ORIGIN_PROXY + 'http://rss.cnn.com/rss/edition_world.rss';
 
 var headlineContainer = document.getElementById("headline");
 var scrollBoxContainer = document.getElementById("scroll-box");
-
-scrollBoxContainer.onmouseover = function (e) {
-    console.log("focus");
-};
-
 var items = [];
 
 var request = new XMLHttpRequest();
@@ -40,7 +42,7 @@ function readyCallback() {
         // update top headline
         var headline = xml.getElementsByTagName("title")[0].innerHTML;
         if (headline != undefined) {
-            headlineContainer.innerHTML = stripCDATA(headline);
+            headlineContainer.innerText = stripCDATA(headline);
         }
 
         // clean up scroll box container
@@ -49,34 +51,57 @@ function readyCallback() {
         // generate content
         for (var i = 0; i < itemsXML.length; i++) {
 
-            var itemData = {id: i};
+            var element = createItem(i, itemsXML, ns);
 
-            // parse XML node and extract relevant data
-            var title = itemsXML[i].getElementsByTagName("title")[0].innerHTML;
-            itemData.title = stripCDATA(title);
-            var description = itemsXML[i].getElementsByTagName("description")[0].innerHTML;
-            itemData.description = stripImageTags(description);
-            itemData.link = itemsXML[i].getElementsByTagName("link")[0].innerHTML; // Not used. Integrate if time allows
-            var group = itemsXML[i].getElementsByTagNameNS(ns, "group")[0];
-            itemData.image = group.firstChild.attributes["url"].value;
+            scrollBoxContainer.appendChild(element.htmlElement);
+            element.htmlElement = document.getElementById("item" + i);
 
-            var element = item("item" + i, itemData.image, itemData.title, itemData.description);
-
-            element = scrollBoxContainer.appendChild(element);
-            itemData.htmlElement = document.getElementById("item" + i);
-
-            console.log(itemData.htmlElement.id + " is visible = " + isScrolledIntoView(itemData.htmlElement)
-                + " - t:" + itemData.htmlElement.getBoundingClientRect().top
-                + ", b: " + itemData.htmlElement.getBoundingClientRect().bottom);
+            if (isScrolledIntoView(element.htmlElement))
+                element.loadContent();
 
             // record the item's data
-            items[i] = itemData;
+            items[i] = element;
         }
-
+        items[0].setFocus();
     }
 }
 
-/* Helper Methods */
+/**
+ * Interactivity Handlers
+ *
+ */
+scrollBoxContainer.onscroll = handleScroll;
+scrollBoxContainer.onresize = handleScroll;
+scrollBoxContainer.onfocus = handleFocus;
+
+var allLoaded = false;
+function handleScroll() {
+    if (!items.length || allLoaded) return;
+
+    var loadedTotal = 0;
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        loadedTotal += (item.isLoaded) ? 1 : 0;
+
+        if (!item.isLoaded && isScrolledIntoView(item.htmlElement)) {
+            item.loadContent();
+        }
+    }
+
+    // optimization for when everything is got loaded
+    if (items.length > 0 && loadedTotal == items.length)
+            allLoaded = true;
+}
+
+function handleFocus() {
+    console.log("handle focus");
+}
+
+/**
+ * Helper Methods
+ *
+ */
 function isScrolledIntoView(element) {
     return !(element.getBoundingClientRect().top >= window.innerHeight);
 }
