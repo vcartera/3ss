@@ -13,6 +13,7 @@ const ENDPOINT = ORIGIN_PROXY + 'http://rss.cnn.com/rss/edition_world.rss';
 
 var headlineContainer = document.getElementById("headline");
 var scrollBoxContainer = document.getElementById("scroll-box");
+
 var items = [];
 var current = 0;
 var inFocus = false;
@@ -78,8 +79,10 @@ scrollBoxContainer.onresize = handleScroll;
 scrollBoxContainer.onfocus = handleFocus;
 scrollBoxContainer.onblur = handleBlur;
 scrollBoxContainer.onmouseover = handleMouseOverElement;
+scrollBoxContainer.onclick = openItem;
 
 document.onkeydown = function (e) {
+    // stop default scrolling
     e.preventDefault();
 };
 document.onkeyup = handleKeyUp;
@@ -122,18 +125,21 @@ function handleKeyUp(k) {
     if (inFocus) {
         var old = current;
         if (k.keyCode == 38) {
-            // UP
+            // UP ARROW key
             current--;
             if (current < 0) {
                 current = 0;
             }
 
         } else if (k.keyCode == 40) {
-            // DOWN
+            // DOWN ARROW key
             current++;
             if (current > items.length - 1) {
                 current = items.length - 1;
             }
+        } else if(k.keyCode == 13){
+            //ENTER key
+            openItem();
         }
         if (old != current) {
             items[old].resetFocus();
@@ -141,6 +147,10 @@ function handleKeyUp(k) {
             scrollToCurrent();
         }
     }
+}
+
+function openItem() {
+    openDetails(items[current]);
 }
 
 function handleMouseOverElement(e) {

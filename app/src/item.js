@@ -4,6 +4,7 @@
  * Handles creation of scroll box elements
  * uses HTML template and injects the data accordingly
  * Depends on specific XML schema (CNN world edition RSS feed)
+ *
  */
 var itemTemplate = document.querySelector('.item-template');
 
@@ -39,7 +40,7 @@ function createItem(index, itemsXML, mediaNS) {
         }
     };
 
-    // focus handler
+    // focus handlers
     itemData.setFocus = function(){
         itemData.htmlElement.style = "border: 2px solid red;";
     };
